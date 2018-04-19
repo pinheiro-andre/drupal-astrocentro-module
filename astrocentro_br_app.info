@@ -1,0 +1,5 @@
+name = "Astrocentro BR"
+description = Astrocentro BR
+core = 7.x
+package = Astrocentro BR
+version = "7.x-1.0"

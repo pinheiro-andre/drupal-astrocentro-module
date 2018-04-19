@@ -1,0 +1,4 @@
+<?php
+
+function astrocentro_br_app_install() {
+}

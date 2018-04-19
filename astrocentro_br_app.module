@@ -1,0 +1,844 @@
+<?php
+
+define("ASTROCENTRO_BR_COM_WS_WENGO_API_KEY", "465b9b364090bec46deabece391b0188");
+define("ASTROCENTRO_BR_COM_WS_TEST_API_KEY", "cafb6712f4e1a596a94b040cc11360c7");
+define("ASTROCENTRO_BR_COM_WS_MEDIASTAY_API_KEY", "e83940f621a2ff51340b36db77596209");
+define("ASTROCENTRO_BR_COM_WS_OWNGOOGLE_API_KEY", "5bf8a1ee6b93381ec71c6ca460c3dae1");
+define("ASTROCENTRO_BR_COM_WS_IG_DELAS_API_KEY", "36c8413e309390b84c44a0822acec1f2");
+define("ASTROCENTRO_BR_COM_WS_CONTENTIGNITION_API_KEY", "2fae068283e821629eb3a1853d6c3907");
+define("ASTROCENTRO_BR_COM_WS_MELT_API_KEY", "751ab5581c1322600e35bbd6a1b952cb");
+define("ASTROCENTRO_BR_COM_WS_AFILIO_API_KEY", "8c8bd4293fb9a982130acd749027cc19");
+
+function astrocentro_br_app_init(){
+	// variable_set("wengo_syncho_sync_only_lang", array("pt-br" => "pt-br" ));
+	// Mise à jour toutes les 30 minutes
+	//variable_set("wengo_core_experts_synch_cron_frequency", 1800);
+}
+
+function astrocentro_br_app_views_pre_render(&$view){
+	if($view->name == "toutes_les_applications"){
+		// Metatags
+		$page_keywords = array(
+	        '#type' => 'html_tag',
+	        '#tag' => 'meta',
+	        '#attributes' => array(
+	        	'name' => 'keywords',
+	          	'content' => 'oraculo, consultar oraculo, oraculos, oraculo do amor, oraculo gratis, jogo oraculo, oraculo web, site oraculo, interpretacao oraculo, oraculo online, tarot oraculo, vidente oraculo, divindade, artes divinatorias',
+	        )
+		);
+	    drupal_add_html_head($page_keywords, 'page_keywords');
+	    $page_description = array(
+	        '#type' => 'html_tag',
+	        '#tag' => 'meta',
+	        '#attributes' => array(
+	        	'name' => 'description',
+	          	'content' => 'Através do nosso Oráculo Online saiba como será seu futuro no amor e em diversas áreas.',
+	        )
+		);
+	    drupal_add_html_head($page_description, 'page_description');
+	}
+	elseif($view->name == "blog" && $view->current_display == "page"){
+		// Metatags
+		$page_keywords = array(
+	        '#type' => 'html_tag',
+	        '#tag' => 'meta',
+	        '#attributes' => array(
+	        	'name' => 'keywords',
+	          	'content' => 'blog esoterismo, blog vidente, blog videncia, blog tarologo, blog astrologia, noticia signos, fases da lua, noticia horoscopo, blog astrocentro, blogueiros astrologos, blogueiros esotericos, ',
+	        )
+		);
+	    drupal_add_html_head($page_keywords, 'page_keywords');
+	    $page_description = array(
+	        '#type' => 'html_tag',
+	        '#tag' => 'meta',
+	        '#attributes' => array(
+	        	'name' => 'description',
+	          	'content' => 'Confira artigos sobre Astrologia, Ocultismo, Videncia, Esoterismo e muitos outros temas.',
+	        )
+		);
+	    drupal_add_html_head($page_description, 'page_description');
+	}
+	
+	// Metatags for landing pages OwnGoogle
+	elseif(arg(0) == "lp2owngoogle"){
+	    drupal_set_title('Consulta de Tarot, vidência e astrologia');
+		//-
+	    $page_description = array(
+	        '#type' => 'html_tag',
+	        '#tag' => 'meta',
+	        '#attributes' => array(
+	        	'name' => 'description',
+	          	'content' => 'Descubra como resolver os seus problemas no amor, dinheiro e receba orientações sobre seu futuro com videntes, astrólogos, tarólogos e outros esotéricos. Os especialistas do Astrocentro fazem consulta ao oráculo por 10 minutos pagando apenas R$ 1. O tarot revela muito sobre você e seu futuro, faça agora uma consulta com nossos especialistas.',
+	        )
+		);
+	    drupal_add_html_head($page_description, 'page_description');
+	}
+	elseif(arg(0) == "lp3owngoogle"){
+	    drupal_set_title('Consulta de Tarot, vidência e astrologia');
+		//-
+	    $page_description = array(
+	        '#type' => 'html_tag',
+	        '#tag' => 'meta',
+	        '#attributes' => array(
+	        	'name' => 'description',
+	          	'content' => 'Descubra como resolver os seus problemas no amor, dinheiro e receba orientações sobre seu futuro com videntes, astrólogos, tarólogos e outros esotéricos. Os especialistas do Astrocentro fazem consulta ao oráculo por 10 minutos pagando apenas R$ 1. O tarot revela muito sobre você e seu futuro, faça agora uma consulta com nossos especialistas.',
+	        )
+		);
+	    drupal_add_html_head($page_description, 'page_description');
+	}
+}
+
+function astrocentro_br_app_block_info(){
+
+	/** Blocks Sidebar **/
+
+        // cache test
+	$blocks['astrocentro_br_cache_test'] = array(
+		'info' => t('Cache_Test'),
+		'cache' => DRUPAL_CACHE_GLOBAL
+	);
+
+
+	// Block experts
+	$blocks['astrocentro_br_experts_tabs'] = array(
+		'info' => t('Experts list WS - Tabs'),
+		'cache' => DRUPAL_CACHE_GLOBAL
+	);
+
+	// Comment consulter
+	$blocks['astrocentro_br_comment_consulter'] = array(
+		'info' => t('Astrocentro BR - Como fazer a sua consulta'),
+		'cache' => DRUPAL_CACHE_GLOBAL,
+	);
+	
+	// Inscription newsletter
+	$blocks['astrocentro_br_newsletter_v2'] = array(
+		'info' => t('Astrocentro BR - Captation prospects'),
+		'cache' => DRUPAL_CACHE_GLOBAL,
+	);
+
+	// Jeux
+	$blocks['astrocentro_br_tarot_do_amor'] = array(
+		'info' => t('Astrocentro BR - Jeux'),
+		'cache' => DRUPAL_CACHE_GLOBAL
+	);
+	// Facebook LikeBox
+	$blocks['astrocentro_br_facebook_likebox'] = array(
+		'info' => t('Astrocentro BR - Facebook - likebox'),
+		'cache' => DRUPAL_CACHE_GLOBAL
+	);
+	
+	// DFP - Sidebar - 1
+	$blocks['astrocentro_br_dfp_sidebar_slot1'] = array(
+		'info' => t('DFP - sidebar - 1'),
+		'cache' => DRUPAL_CACHE_GLOBAL
+	);
+	
+	// DFP - Sidebar - 2
+	$blocks['astrocentro_br_dfp_sidebar_slot2'] = array(
+		'info' => t('DFP - sidebar - 2'),
+		'cache' => DRUPAL_CACHE_GLOBAL
+	);
+	
+	// DFP - Sidebar - 3
+	$blocks['astrocentro_br_dfp_sidebar_slot3'] = array(
+		'info' => t('DFP - sidebar - 3'),
+		'cache' => DRUPAL_CACHE_GLOBAL
+	);
+
+	return $blocks;
+}
+
+function astrocentro_br_app_menu(){
+
+	$items = array();
+	
+
+	/*Tarot do Amor - v8*/
+	$items['oraculos/tarot-do-amor-gratis'] = array(
+		'title' => "Descubra o futuro amoroso do Tarot do Amor",
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_tarot_do_amor_page',
+		//'file' => 'tarot_do_amor_v7.inc', // formulaire Ajax 2 étapes
+		//'file' => 'tarot_do_amor_v8.inc', // formulaire Ajax 2 étapes
+		'file' => 'tarot_do_amor_v9.inc', // formulaire Ajax 1 étape
+	);
+	//page de confirmation
+	/*$items['oraculos/tarot-do-amor-c'] = array(
+		'title' => "Descubra o futuro amoroso do Tarot do Amor",
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_tarot_do_amor_step3_page',
+		'file' => 'tarot_do_amor_v8.inc',
+	);*/
+	
+/* Como consultar - criar uma conta */
+	$items['criar-conta'] = array(
+		'title' => "Passo a passo para criar uma conta",
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_criar_conta_page',
+		'file' => 'criar_conta.inc', //version responsive
+	);
+
+/*Landing Delas*/
+	$items['previsoes2014delas'] = array(
+		'title' => "",
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_lpdelas_page_responsive', //v2
+		'file' => 'landing_astrocentro_br.inc',
+	);
+	$items['previsoes2014delas-c'] = array(
+		'title' => "",
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_delas_page_responsive_ok',
+		'file' => 'landing_astrocentro_br.inc',
+	);
+
+/*page Astrocentro TV*/
+	$items['astrocentrotv'] = array(
+		'title' => "",
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_astrocentrotv_page',
+		'file' => 'astrocentrotv.inc',
+	);
+
+/*redirect provenant de youtube vers page des experts*/
+	$items['youtube-r'] = array(
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_youtube_redirect_page',
+	);
+	
+/*Landing responsive Own Google AdsWords 01*/
+	$items['lp1p1own'] = array(
+		'title' => "",
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_lp1p1own_page',
+		'file' => 'landing_responsive_astrobr.inc',
+	);
+	$items['lp1p1own-c'] = array(
+		'title' => "",
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_lp1p1own_confirmation_page',
+		'file' => 'landing_responsive_astrobr.inc',
+	);
+	
+/*Landing responsive Own Google AdsWords 02*/
+	$items['lp2p1own'] = array(
+		'title' => "",
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_lp2p1own_page',
+		'file' => 'landing_responsive_astrobr.inc',
+	);
+	$items['lp2p1own-c'] = array(
+		'title' => "",
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_lp2p1own_confirmation_page',
+		'file' => 'landing_responsive_astrobr.inc',
+	);
+	
+/*Landing responsive Own Google AdsWords 02*/
+	$items['lp3p1own'] = array(
+		'title' => "",
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_lp3p1own_page',
+		'file' => 'landing_responsive_astrobr.inc',
+	);
+	$items['lp3p1own-c'] = array(
+		'title' => "",
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_lp3p1own_confirmation_page',
+		'file' => 'landing_responsive_astrobr.inc',
+	);
+	
+/*Event chat*/
+	$items['evento/chat'] = array(
+		'title' => "",
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_chat_page',
+		'file' => 'live_chat-coveritlive.inc',
+	);
+
+/*Lead form on Astrocentro eCo*/
+	$items['form-leads'] = array(
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_iframe_leads_page',
+		'file' => 'iframe_form_leads.inc',
+	);
+
+/* lpcadastro */
+	$items['lpcadastro'] = array(
+		'type' => MENU_CALLBACK,
+		'page arguments' => array('astrocentro_br_app_form_lpcadastro'),
+		'access callback' => TRUE,	
+		'page callback' => 'astrocentro_br_app_lpcadastro',
+		'file' => 'landing/lpcadastro.inc',
+	);
+	$items['lpcadastro-c'] = array(
+		'title' => "",
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,
+		'page callback' => 'astrocentro_br_app_lpcadastro_confirmation',
+		'file' => 'landing/lpcadastro.inc',
+	);
+
+/* Numerologia */
+	$items['blog/numerologia-gratis'] = array(
+		'type' => MENU_CALLBACK,
+		'access callback' => TRUE,	
+		'page callback' => 'astrocentro_br_app_numerologia',
+		'file' => 'numerologia_v2.inc',
+	);
+
+	return $items;
+}
+
+function astrocentro_br_app_block_view($delta = '') {
+
+	$detect = mobile_detect_get_object();
+
+	if($delta == "astrocentro_br_experts_tabs"){
+		
+		if($cached = cache_get('cache_experts_tabs', 'cache'))  {
+		    $content = $cached->data;
+		  }
+				
+		return array(
+			'subject' => "Esotéricos e videntes disponíveis agora",
+			'content' => $content
+		);
+	}	       
+
+	elseif($delta == "astrocentro_br_comment_consulter"){
+		return array(
+			'subject' => "",
+			'content' => ""
+		);
+	}
+		
+	elseif($delta == "astrocentro_br_newsletter_v2"){
+		
+		$form =  drupal_get_form("astrocentro_br_newsletter_v2_form");
+		$content = "<p>Preencha os campos abaixo e passe a<br/><strong>receber as novidades do Astrocentro</strong>,<br/>além de Promoções e Ofertas exclusivas.</p>";
+		$content .= drupal_render($form);
+	
+		return array(
+			'subject' => "",
+			'content' => $content
+		);
+	}
+
+	elseif($delta == "astrocentro_br_tarot_do_amor"){
+		$path = drupal_get_path('theme', 'astrocentro_br');
+		$content = "<a href='/oraculos' alt='Oráculos'><img src='/{$path}/images/tarot_do_amor.jpg' alt='Descubra os nossos jogos' title='Descubra os nossos jogos' /></a>";
+
+		return array(
+			'subject' => "Desvende seu futuro com nossos jogos",
+			'content' => $content
+		);
+	}
+	
+	elseif($delta == "astrocentro_br_facebook_likebox"){
+		return array(
+			'subject' => "",
+			'content' => "
+				<div class='like-box-desktop'><div class=\"fb-page\" data-href=\"https://www.facebook.com/Astrocentro.com.br\" data-width=\"300\" data-height=\"250\" data-hide-cover=\"false\" data-show-facepile=\"true\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"><blockquote cite=\"https://www.facebook.com/Astrocentro.com.br\"><a href=\"https://www.facebook.com/Astrocentro.com.br\">Astrocentro Brasil</a></blockquote></div></div></div>
+				<div class='like-box-tablet'><div class=\"fb-page\" data-href=\"https://www.facebook.com/Astrocentro.com.br\" data-width=\"190\" data-height=\"250\" data-hide-cover=\"false\" data-show-facepile=\"true\" data-show-posts=\"false\"><div class=\"fb-xfbml-parse-ignore\"><blockquote cite=\"https://www.facebook.com/Astrocentro.com.br\"><a href=\"https://www.facebook.com/Astrocentro.com.br\">Astrocentro Brasil</a></blockquote></div></div></div>"
+		);
+	}
+	
+	elseif($delta == "astrocentro_br_dfp_sidebar_slot1"){
+		return array(
+			'subject' => "",
+			'content' => "
+				<!-- astrobr_sidebar_slot1 -->
+				<div id='div-gpt-ad-1425649938190-0' style='width:300px; height:250px;'>
+				<script type='text/javascript'>
+				googletag.cmd.push(function() { googletag.display('div-gpt-ad-1425649938190-0'); });
+				</script>
+				</div>
+			"
+		);
+	}
+	elseif($delta == "astrocentro_br_dfp_sidebar_slot2"){
+		return array(
+			'subject' => "",
+			'content' => "
+				<!-- astrobr_sidebar_slot2 -->
+				<div id='div-gpt-ad-1425649938190-1' style='width:300px; height:250px;'>
+				<script type='text/javascript'>
+				googletag.cmd.push(function() { googletag.display('div-gpt-ad-1425649938190-1'); });
+				</script>
+				</div>
+			"
+		);
+	}
+	elseif($delta == "astrocentro_br_dfp_sidebar_slot3"){
+		return array(
+			'subject' => "",
+			'content' => "
+				<!-- astrobr_sidebar_slot3 -->
+				<div id='div-gpt-ad-1425649938190-2' style='width:300px; height:250px;'>
+				<script type='text/javascript'>
+				googletag.cmd.push(function() { googletag.display('div-gpt-ad-1425649938190-2'); });
+				</script>
+				</div>
+			"
+		);
+	}
+
+}
+
+function astrocentro_br_newsletter_v2_form($form, &$form_state) {
+	$form['prospect_email'] = array(
+		'#type' => 'textfield',
+		'#required' => TRUE,
+		'#title' => t(""),
+        '#attributes' => array(
+            'placeholder' => t('Email'),
+			'autocomplete' => 'off',
+        )
+	);
+	$form['prospect_name'] = array(
+		'#type' => 'textfield',
+		'#required' => TRUE,
+		'#title' => t(""),
+        '#attributes' => array(
+            'placeholder' => t('Nome'),
+			'autocomplete' => 'off',
+        )
+	);
+	$form['prospect_phone1'] = array(
+		'#type' => 'textfield',
+		'#required' => TRUE,
+		'#title' => t(""),
+        '#attributes' => array(
+            'placeholder' => t('DDD'),
+			'autocomplete' => 'off',
+        )
+	);
+	$form['prospect_phone2'] = array(
+		'#type' => 'textfield',
+		'#required' => TRUE,
+		'#title' => t(""),
+        '#attributes' => array(
+            'placeholder' => t('Celular'),
+			'autocomplete' => 'off',
+        )
+	);
+	
+	 $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Inscreva-se',
+	//'#prefix' => '<button type="submit"><i class="fa fa-chevron-right"></i> INSCREVA-SE',
+	//'#suffix' => '</button>',
+  );
+
+	return $form;
+}
+
+function astrocentro_br_landing_blogform_form($form, &$form_state) {
+	$form['prospect_name'] = array(
+		'#type' => 'textfield',
+		'#required' => TRUE,
+		'#title' => t(""),
+        '#attributes' => array(
+            'placeholder' => t('Nome'),
+			'autocomplete' => 'off',
+        )
+	);
+	$form['prospect_email'] = array(
+		'#type' => 'textfield',
+		'#required' => TRUE,
+		'#title' => t(""),
+        '#attributes' => array(
+            'placeholder' => t('Email'),
+			'autocomplete' => 'off',
+        )
+	);
+	$form['prospect_phone1'] = array(
+		'#type' => 'textfield',
+		'#required' => TRUE,
+		'#title' => t(""),
+        '#attributes' => array(
+            'placeholder' => t('DDD'),
+			'autocomplete' => 'off',
+        )
+	);
+	$form['prospect_phone2'] = array(
+		'#type' => 'textfield',
+		'#required' => TRUE,
+		'#title' => t(""),
+        '#attributes' => array(
+            'placeholder' => t('Celular'),
+			'autocomplete' => 'off',
+        )
+	);
+	
+	 $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Enviar',
+	//'#prefix' => '<button type="submit"><i class="fa fa-chevron-right"></i> INSCREVA-SE',
+	//'#suffix' => '</button>',
+  );
+
+	return $form;
+}
+
+function astrocentro_br_newsletter_v2_form_validate($form, &$form_state) {	
+	if(!valid_email_address($form_state['values']['prospect_email']) || empty($form_state['values']['prospect_email']))
+			form_set_error('astrocentro_br_newsletter_v2_form][prospect_email', 'Digite seu email.');
+	
+	
+	$check_phone = trim($form_state['values']['prospect_phone2']);
+	if(!is_numeric($check_phone) && strlen($check_phone) > 9 ){
+		if(strlen($check_phone) < 7 ){
+			form_set_error('astrocentro_br_newsletter_v2_form][prospect_phone2', 'Digite seu celular');
+		}
+	}
+}
+
+function astrocentro_br_landing_blogform_form_validate($form, &$form_state) {	
+	if(!valid_email_address($form_state['values']['prospect_email']) || empty($form_state['values']['prospect_email']))
+			form_set_error('astrocentro_br_landing_blogform_form][prospect_email', 'Digite seu email.');
+	
+	
+	$check_phone = trim($form_state['values']['prospect_phone2']);
+	if(!is_numeric($check_phone) && strlen($check_phone) > 9 ){
+		if(strlen($check_phone) < 7 ){
+			form_set_error('astrocentro_br_landing_blogform_form][prospect_phone2', 'Digite seu celular');
+		}
+	}
+}
+
+function astrocentro_br_newsletter_v2_form_submit($form, &$form_state) {
+	if(!form_get_errors()){
+		
+		$ws = "http://ws.wengo.fr/user/server.php";
+		
+		/*switch(WENGO_ENV){
+			case 'prod':
+				$ws = "http://ws.wengo.fr/user/server.php";
+				break;
+			case 'preprod':
+				$ws = "http://ws.wengo.fr.geekic.com/user/server.php";
+				break;
+			default:
+				$ws = "http://ws.wengo.fr.center.localdev4/user/server.php";
+				break;
+		}*/
+		
+		$email = $form_state['values']['prospect_email'];
+		$name = $form_state['values']['prospect_name'];
+		
+		$denied = explode(",","ç,æ,œ,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,e,i,ø,u,ã,õ,Ç,Æ,Œ,Á,É,Í,Ó,Ú,À,È,Ì,Ò,Ù,Ä,Ë,Ï,Ö,Ü,Ÿ,Â,Ê,Î,Ô,Û,Å,E,I,Ø,U,Ã,Õ,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,±");
+		$authorized = explode(",","c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,e,i,o,u,a,o,C,AE,OE,A,E,I,O,U,A,E,I,O,U,A,E,I,O,U,Y,A,E,I,O,U,A,E,I,O,U,A,O,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,+");
+
+		$email = str_replace($denied, $authorized, $email);
+		$name = str_replace($denied, $authorized, $name);
+
+		$telephone = $form_state['values']['prospect_phone1'].$form_state['values']['prospect_phone2'];
+		$telephone = str_replace (' ', '', $telephone);
+		$telephone = str_replace ('-', '', $telephone);
+		$telephone = str_replace ('(', '', $telephone);
+		$telephone = str_replace (')', '', $telephone);
+		
+		if ((isset($_GET["wl"])) || (isset($_COOKIE["wl"]))) {
+			//IG
+			$tracker = 'v2_11621';
+			$family = 'beeleads_concursos_cr';
+			$api_key = '7899a9231bce4cca0f990c31b66d75a4';
+			
+		} else {
+			//Astrocentro
+			$tracker = 'v2_8396';
+			$family = 'blog_lp';
+			$api_key = '465b9b364090bec46deabece391b0188';
+		}
+		
+		$subscription = array();
+		$subscription[] = $api_key; // API Key
+		$subscription[] = NULL; //login
+		$subscription[] = urlencode($email); //email
+		$subscription[] = NULL; //password
+		$subscription[] = urlencode($name);
+		$subscription[] = "0055".$telephone;
+		$subscription[] = "por";
+		$subscription[] = "bra";
+		$subscription[] = "1"; //population
+		$subscription[] = $tracker;
+		$subscription[] = NULL;
+		$subscription[] = "hdk_prospect";
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = "1270";
+		$subscription[] = $family; //family string $family family (optional, default value ) // here the campaign_type
+		
+		$data_s = '?method=create_generic_prospect_v1&args[]='.implode('&args[]=', $subscription);
+		watchdog("newsletter_form_submit", "call {$ws}{$data_s}");
+		
+		$r = drupal_http_request($ws.$data_s, array(
+			'method' => "get",
+		));
+		$check = json_decode( $r->data, true );
+		
+		if ( $check["status_code"] == "0" ) {
+			drupal_set_message("Sua subscrição foi confirmada");
+		}else if( $check["status_details"]["trusted_errdesc"] == "email already exist" ){
+			drupal_set_message(t(' Esse email já está cadastrado. Tente novamente.'), 'warning');
+		}else{
+			drupal_set_message(t(' Houve um problema técnico. Tente novamente.'), 'warning');
+		}
+		
+		//debug
+		global $user;
+		if($user->uid == 1){
+			echo "<pre>";var_dump($ws.$data_s);echo "</pre>";
+			echo "<pre>";var_dump($r);echo "</pre>";
+			echo "<pre>";var_dump($check);echo "</pre>";
+			echo "<pre>";var_dump($check["data"]);echo "</pre>";
+			echo "<pre>";var_dump("0055".$telephone);echo "</pre>";
+			
+			die();
+		}
+
+	}
+}
+
+function astrocentro_br_landing_blogform_form_submit($form, &$form_state) {
+	if(!form_get_errors()){
+
+		switch(WENGO_ENV){
+			case 'prod':
+				$ws = "http://ws.wengo.fr/user/server.php";
+				break;
+			case 'preprod':
+				$ws = "http://ws.wengo.fr.geekic.com/user/server.php";
+				break;
+			default:
+				$ws = "http://ws.wengo.fr.center.localdev4/user/server.php";
+				break;
+		}
+		
+		$email = $form_state['values']['prospect_email'];
+		$name = $form_state['values']['prospect_name'];
+		
+		$denied = explode(",","ç,æ,œ,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,e,i,ø,u,ã,õ,Ç,Æ,Œ,Á,É,Í,Ó,Ú,À,È,Ì,Ò,Ù,Ä,Ë,Ï,Ö,Ü,Ÿ,Â,Ê,Î,Ô,Û,Å,E,I,Ø,U,Ã,Õ,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,±");
+		$authorized = explode(",","c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,e,i,o,u,a,o,C,AE,OE,A,E,I,O,U,A,E,I,O,U,A,E,I,O,U,Y,A,E,I,O,U,A,E,I,O,U,A,O,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,+");
+
+		$email = str_replace($denied, $authorized, $email);
+		$name = str_replace($denied, $authorized, $name);
+
+		$telephone = $form_state['values']['prospect_phone1'].$form_state['values']['prospect_phone2'];
+		$telephone = str_replace (' ', '', $telephone);
+		$telephone = str_replace ('-', '', $telephone);
+		$telephone = str_replace ('(', '', $telephone);
+		$telephone = str_replace (')', '', $telephone);
+		$family = null;
+		
+		$subscription = array();
+		$subscription[] = ASTROCENTRO_BR_COM_WS_WENGO_API_KEY; // API Key
+		$subscription[] = NULL; //login
+		$subscription[] = urlencode($email); //email
+		$subscription[] = NULL; //password
+		$subscription[] = urlencode($name);
+		$subscription[] = "0055".$telephone;
+		$subscription[] = "por";
+		$subscription[] = "bra";
+		$subscription[] = "1"; //population
+		$subscription[] = "v2_8022";
+		$subscription[] = NULL;
+		$subscription[] = "hdk_prospect";
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = NULL;
+		$subscription[] = "1270";
+		$subscription[] = $family; //family string $family family (optional, default value ) // here the campaign_type
+		
+		$data_s = '?method=create_generic_prospect_v1&args[]='.implode('&args[]=', $subscription);
+		watchdog("landing_blogform_form_submit", "call {$ws}{$data_s}");
+		
+		$r = drupal_http_request($ws.$data_s, array(
+			'method' => "get",
+		));
+		$check = json_decode( $r->data, true );
+		
+		if ( $check["status_code"] == "0" ) {
+			setcookie("AlreadyRegistered", TRUE);
+            echo "<script>localStorage.removeItem('AlreadyOpen'); document.getElementsByClassName('call2action-mobile-1').innerHTML = 'Um atendente te ligará em breve.'setTimeout(function() {jQuery('.call2action-mobile-1').remove();}, 5000);</script>";
+		}else if( $check["status_details"]["trusted_errdesc"] == "email already exist" ){
+			drupal_set_message(t(' Esse email já está cadastrado. Tente novamente.'), 'warning');
+		}else{
+			drupal_set_message(t(' Houve um problema técnico. Tente novamente.'), 'warning');
+		}
+		
+		//debug
+		global $user;
+		if($user->uid == 1){
+			echo "<pre>";var_dump($ws.$data_s);echo "</pre>";
+			echo "<pre>";var_dump($r);echo "</pre>";
+			echo "<pre>";var_dump($check);echo "</pre>";
+			echo "<pre>";var_dump($check["data"]);echo "</pre>";
+			echo "<pre>";var_dump("0055".$telephone);echo "</pre>";
+			
+			die();
+		}
+
+	}
+}
+
+function astrocentro_br_app_form_newsletter_email($form, &$form_state){
+
+	$form["wrapper"] = array(
+		"#markup" => "<div id='wrapper-ajax'></div>"
+	);
+
+	$form['email'] = array(
+		'#title' => "Inscreva-se para receber gratuitamente o seu horóscopo por Email",
+		'#type' => 'textfield',
+	);
+
+	$form['name'] = array(
+		'#title' => "Nome",
+		'#type' => 'textfield',
+	);
+
+	$days = array_combine(range(1, 31), range(1, 31));
+	$days = array("" => "Dia") + $days;
+	$form['birth_day'] = array(
+		'#title' => "Data de nascimento",
+		'#type' => 'select',
+		'#options' => $days
+	);
+
+	$months = array_combine(range(1, 12), range(1, 12));
+	$months = array("" => "Mes") + $months;
+	$form['birth_month'] = array(
+		'#title' => "",
+		'#type' => 'select',
+		'#options' => $months
+	);
+
+	$years = array_combine(range(1920, date("Y")), range(1920, date("Y")));
+	$years = array("" => "Ano") + $years;
+	$form['birth_year'] = array(
+		'#title' => "",
+		'#type' => 'select',
+		'#options' => $years
+	);
+
+	$form['horoscope'] = array(
+		'#title' => "Eu quero também receber a newsletter do Astrocentro com ás últimas noticias e as ofertas especiais",
+		'#type' => 'checkbox',
+	);
+
+	$form['submit'] = array(
+		'#type' => 'image_button',
+		'#src' => path_to_theme() . "/images/btn_confirmar.png"
+	);
+
+	return $form;
+}
+
+function astrocentro_br_app_form_newsletter_email_validate($form, &$form_state){
+	if(empty($form_state['values']['email']) || !valid_email_address($form_state['values']['email']))
+		form_set_error('email', "Vous devez saisir un email");
+
+	if(empty($form_state['values']['name']))
+		form_set_error('name', "Vous devez saisir votre prénom");
+
+	if(!is_numeric($form_state['values']['birth_day']) || !is_numeric($form_state['values']['birth_month']) || !is_numeric($form_state['values']['birth_year']))
+		form_set_error('birth_day', "Vous devez saisir votre date de naissance");
+}
+
+function astrocentro_br_app_form_newsletter_email_submit($form, &$form_state){
+	if(!form_get_errors()){
+		// Formattage de la date de naissance
+		$form_state['values']['date_of_birth'] = $form_state['values']['birth_year'] . "-" . $form_state['values']['birth_month'] . "-" . $form_state['values']['birth_day'];
+		// Horoscope ?
+		$horoscope = ($form_state['values']['horoscope'] == 1) ? 1 : 0;
+		if(astrocentro_br_app_suscribe_horoscope($form_state, 1, $horoscope))
+			drupal_set_message("Sua subscrição foi confirmada");
+		else
+			drupal_set_message("Erro", 'error');
+	}
+}
+
+function gen_uuid() {
+    return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        // 32 bits for "time_low"
+        mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+
+        // 16 bits for "time_mid"
+        mt_rand( 0, 0xffff ),
+
+        // 16 bits for "time_hi_and_version",
+        // four most significant bits holds version number 4
+        mt_rand( 0, 0x0fff ) | 0x4000,
+
+        // 16 bits, 8 bits for "clk_seq_hi_res",
+        // 8 bits for "clk_seq_low",
+        // two most significant bits holds zero and one for variant DCE1.1
+        mt_rand( 0, 0x3fff ) | 0x8000,
+
+        // 48 bits for "node"
+        mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+    );
+}
+
+function astrocentro_br_app_youtube_redirect_page(){
+	$redirect_to = $_GET['redirect'];
+	echo ($redirect_to);
+	header("Location: ".$redirect_to);
+	die();
+}
+
+function astrocentro_br_app_jcarousel_skin_info() {
+  $skin = array();
+ 
+  $skin['astrobr'] = array(
+    'title' => t('Astro BR'),
+    'file' => 'skins/astrobr/jcarousel-astrobr.css',
+  );
+ 
+  return $skin;
+}
+
+function astrocentro_br_app_preprocess_html(&$variables) {
+	global $theme;
+	if($theme == 'seven') {
+		drupal_add_css(drupal_get_path('module', 'astrocentro_br_app') . '/css/tweak_admin.css');
+	}
+}
